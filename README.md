@@ -1,18 +1,29 @@
 Instructions to be followed
 --------------------------------------------------
 
+create a environment variable first:
+python -m venv env
+
+Activate the enviroment variable :
+env\Scripts\activate
+
+===================================================
+
 Install the below required packages:
 
 django - (pip install django)
 tensorflow - (pip install tensorflow)
 pillow - (pip install pillow || pip install PIL)
 numpy (pip install numpy)
+matplotlib ( pip install matplotlib)
 
 ===================================================
 
+
+
 Configuration to be made:
 
-Inside diabetic_retinopathy -> settings.py at last you have to put your local path to output directory currently it is my local path 
+Inside diabetic_retinopathy -> settings.py at last you have to put your local path to output directory, currently it is my local path 
 
 ===================================================
 
