@@ -1,0 +1,337 @@
+<!-- <!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetic Retinopathy</title>
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    
+   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
+   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url("http://html.xpeedstudio.com/agmycoo/assets/images/welcome/welcome-icon-bg-3.png");
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 style="text-align: center;font-family: 'Raleway', sans-serif;
+" class="mt-5 mb-5"><u>Diabetic Retinopathy</u></h2>
+            <div class="row mt-5">
+        <div class="col-md-6 mt-3">
+            <img src="https://plus.unsplash.com/premium_photo-1664299267040-5be8e3f3c057?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" id="banner" alt=""
+                 style="width: 500px">
+        </div>
+        <div class="col-md-6 mt-5">
+            <div class="card p-4 hoverable">
+                <div class="card-header">
+                    <h5 style="text-align: center;font-weight: bold;font-family: 'Raleway', sans-serif;
+" id="title">Upload Image below</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="buttons">
+                            <button class="btn btn-indigo"><input type="file" id="image"/></button>
+                            <button class="btn btn-indigo" id="process">Test <i class="fas fa-cloud-upload-alt"></i>
+                            </button>
+                        </div>
+
+                        <div class="loader ml-5" style="display: none;">
+                            <div class="spinner-grow text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-secondary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-danger" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-warning" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-info" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-secondary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+
+                        <div class="result" style="display: none;margin-left: 10%">
+                            <p style="font-weight: bold;font-size: 24px;color: #3f51b5;" id="disease"></p>
+                            <p style="font-weight: bold;font-size: 24px;color: #3f51b5;" id="accuracy"></p>
+                            <p>
+                                <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+                                   aria-controls="collapseExample">
+                                    View Graph <i class="fas fa-angle-down"></i>
+                                </a>
+                                <a href="/" class="ml-5">
+                                    Try again <i class="fas fa-sync"></i>
+                                </a>
+                            </p>
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+                                    <img id="graph" style="width: 350px" >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+<script>
+    $(document).ready(() => {
+        $("input[id='image']").on('change', function (event) {
+            let input = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#banner').css('width', '350px')
+                $('#banner').addClass('img-thumbnail')
+                $('#banner').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        })
+
+        $('#process').click(() => {
+            $('.buttons').hide()
+            $('.loader').show()
+            $('#title').html("Processing...")
+            let image = $('#image').prop('files')[0]
+            var data = image['name'];
+
+            console.log(data)
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/",
+                type: "POST",
+                dataType: 'json',
+                data: {
+                    image: data,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (xhr) {
+                    alert("Error while processing")
+                },
+                error: function (xhr) {
+                    $('#title').html("Result")
+                    let result = (xhr.responseText).split("-");
+                    let disease = result[0];
+                    let accuracy = result[1];
+                    $('.loader').hide()
+                    $('#disease').html("Result: " + disease)
+                    $('#accuracy').html("Accuracy: " + parseInt(accuracy).toFixed(2) + "%")
+                    $('#graph').attr('src', '{% static "graph.png" %}')
+                    $('.result').show()
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>
+ -->
+
+
+
+
+
+ <!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetic Retinopathy</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url("http://html.xpeedstudio.com/agmycoo/assets/images/welcome/welcome-icon-bg-3.png");
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .loader {
+            display: none;
+            margin-top: 20px;
+        }
+        .result {
+            display: none;
+            margin-top: 20px;
+        }
+        #banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        #graph {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align: center;font-family: 'Raleway', sans-serif;" class="mt-5 mb-5"><u>Diabetic Retinopathy</u></h2>
+        <div class="row mt-5">
+            <div class="col-md-6 mt-3">
+                <img src="https://plus.unsplash.com/premium_photo-1664299267040-5be8e3f3c057?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" id="banner" alt="" class="img-fluid">
+            </div>
+            <div class="col-md-6 mt-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 style="text-align: center;font-weight: bold;font-family: 'Raleway', sans-serif;" id="title">Upload Image below</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="buttons">
+                                <button class="btn btn-indigo"><input type="file" id="image"/></button>
+                                <button class="btn btn-indigo" id="process">Test <i class="fas fa-cloud-upload-alt"></i>
+                                </button>
+                            </div>
+                            <div class="loader ml-5">
+                                <div class="spinner-grow text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-secondary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-success" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-danger" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-warning" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-info" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="result">
+                                <p style="font-weight: bold;font-size: 24px;color: #3f51b5;" id="disease"></p>
+                                <p style="font-weight: bold;font-size: 24px;color: #3f51b5;" id="accuracy"></p>
+                                <p>
+                                    <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+                                       aria-controls="collapseExample">
+                                        View Graph <i class="fas fa-angle-down"></i>
+                                    </a>
+                                    <a href="/" class="ml-5">
+                                        Try again <i class="fas fa-sync"></i>
+                                    </a>
+                                </p>
+                                <div class="collapse" id="collapseExample">
+                                    <div class="card card-body">
+                                        <img id="graph" alt="" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("input[id='image']").on('change', function (event) {
+                let input = this;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#banner').css('width', '100%')
+                    $('#banner').addClass('img-fluid')
+                    $('#banner').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            })
+
+            $('#process').click(() => {
+                $('.buttons').hide()
+                $('.loader').show()
+                $('#title').html("Processing...")
+                let image = $('#image').prop('files')[0]
+                var data = image['name'];
+
+                console.log(data)
+                $.ajax({
+                    url: "http://127.0.0.1:8000/api/",
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        image: data,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (xhr) {
+                        alert("Error while processing")
+                    },
+                    error: function (xhr) {
+                        $('#title').html("Result")
+                        let result = (xhr.responseText).split("-");
+                        let disease = result[0];
+                        let accuracy = result[1];
+$('.loader').hide()
+                        $('#disease').html("Result: " + disease)
+                        $('#accuracy').html("Accuracy: " + parseInt(accuracy).toFixed(2) + "%")
+                        $('#graph').attr('src', '{% static "graph.png" %}')
+                        $('.result').show()
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

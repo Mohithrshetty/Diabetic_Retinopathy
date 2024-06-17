@@ -1,0 +1,5 @@
+0 Healthy
+1 Mild DR
+2 Moderate DR
+3 Proliferate DR
+4 Severe DR
